@@ -62,7 +62,7 @@ metadata {
         }
 
         valueTile("heatindex", "device.heatindex", inactiveLabel:false) {
-            state "default", label:'HI ${currentValue}°', unit:"F",
+            state "default", label:'${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"],
                     [value: 44, color: "#1e9cbb"],
@@ -87,29 +87,16 @@ metadata {
                 ]
         }
 
-        main(["temperature"])
+        main "temperature"
+
 
         details(["humidity", "temperature", "heatindex"])
     }
 
     simulator {
         status "Temperature 72.0":      "simulator:true, temp:72.00"
-        status "Cooling Setpoint 76.0": "simulator:true, t_cool:76.00"
-        status "Heating Setpoint 68.0": "simulator:true, t_cool:68.00"
-        status "Thermostat Mode Off":   "simulator:true, tmode:0"
-        status "Thermostat Mode Heat":  "simulator:true, tmode:1"
-        status "Thermostat Mode Cool":  "simulator:true, tmode:2"
-        status "Thermostat Mode Auto":  "simulator:true, tmode:3"
-        status "Fan Mode Auto":         "simulator:true, fmode:0"
-        status "Fan Mode Circulate":    "simulator:true, fmode:1"
-        status "Fan Mode On":           "simulator:true, fmode:2"
-        status "State Off":             "simulator:true, tstate:0"
-        status "State Heat":            "simulator:true, tstate:1"
-        status "State Cool":            "simulator:true, tstate:2"
-        status "Fan State Off":         "simulator:true, fstate:0"
-        status "Fan State On":          "simulator:true, fstate:1"
-        status "Hold Disabled":         "simulator:true, hold:0"
-        status "Hold Enabled":          "simulator:true, hold:1"
+        status "humidity 68.0":      "simulator:true, humidity:68.0"
+
     }
 }
 

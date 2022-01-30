@@ -69,7 +69,7 @@ void setup() {
   
   server.on("/temp", [](){  // if you add this subdirectory to your webserver call, you get text below :)
     gettemperature();       // read sensor
-    webString="{\"temp\":"+String((int)f)+"" ", \"humidity\": "+String((int)h)+",  \"heat_index\": "+String((int)hif)+"}""";   // Arduino has a hard time with float to string
+    webString=jsonData;   // Arduino has a hard time with float to string
     DEBUG_PRINT("{\"temp\":"+String((int)f)+"" ", \"humidity\": "+String((int)h)+",  \"heat_index\": "+String((int)hif)+"}""")
     server.send(200, "text/plain", webString);            // send to someones browser when asked
   });
