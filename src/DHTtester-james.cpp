@@ -14,9 +14,15 @@
 
 #define DHTPIN 4     // Digital pin connected to the DHT sensor
 #define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
-
+struct SensorData {
+    float tempf;
+    float humidity;
+    float indexf;
+};
 void handle_root();
+String writeData(SensorData,String);
 void gettemperature();
+
 // Connect pin 1 (on the left) of the sensor to +5V
 // NOTE: If using a board with 3.3V logic like an Arduino Due connect pin 1
 // to 3.3V instead of 5V!
@@ -32,12 +38,12 @@ void gettemperature();
 DHT dht(DHTPIN, DHTTYPE);
 const char* ssid     = "Kirbylicous";
 const char* password = "pinkbanana379";
-const int capacity = JSON_OBJECT_SIZE(96);
+
 String jsonData = "";
-StaticJsonDocument<capacity> data;
+String webString="";
 ESP8266WebServer server(80);
-String webString=""; 
-float f,hif,h,t,hic;
+
+float f,h,hif,t,hic;
 
 void handle_root() {
   server.send(200, "text/plain", "Hello from the weather esp8266, read from /temp or /humidity");
@@ -45,33 +51,33 @@ void handle_root() {
 }
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println(F("DHT22 test!"));
-
-  dht.begin();
+    Serial.begin(9600);
+    Serial.println(F("DHT22 test!"));
+    dht.begin();
 
     WiFi.begin(ssid, password);
-  Serial.print("\n\r \n\rWorking to connect");
- 
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print("\n\r \n\rWorking to connect");
+
+    // Wait for connection
+    while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("DHT Weather Reading Server");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+    }
+    Serial.println("");
+    Serial.println("DHT Weather Reading Server");
+    Serial.print("Connected to ");
+    Serial.println(ssid);
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
 
-  server.on("/", handle_root);
-  
-  server.on("/temp", [](){  // if you add this subdirectory to your webserver call, you get text below :)
+    server.on("/", handle_root);
+
+    server.on("/temp", [](){  // if you add this subdirectory to your webserver call, you get text below :)
     gettemperature();       // read sensor
     webString=jsonData;   // Arduino has a hard time with float to string
     DEBUG_PRINT("{\"temp\":"+String((int)f)+"" ", \"humidity\": "+String((int)h)+",  \"heat_index\": "+String((int)hif)+"}""")
     server.send(200, "text/plain", webString);            // send to someones browser when asked
+    webString = "";
   });
 
 
@@ -89,17 +95,18 @@ void setup() {
 
 void gettemperature() {
     // Wait a few seconds between measurements.
+    jsonData = "";
     delay(2000);
 
     // Reading temperature or humidity takes about 250 milliseconds!
     // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
     h = dht.readHumidity();
-    data["humidity"] = int(h);
+
     // Read temperature as Celsius (the default)
     t = dht.readTemperature();
     // Read temperature as Fahrenheit (isFahrenheit = true)
     f = dht.readTemperature(true);
-    data["temp"] = int(f);
+
     // Check if any reads failed and exit early (to try again).
     if (isnan(h) || isnan(t) || isnan(f)) {
     Serial.println(F("Failed to read from DHT sensor!"));
@@ -108,11 +115,12 @@ void gettemperature() {
 
     // Compute heat index in Fahrenheit (the default)
     hif = dht.computeHeatIndex(f, h);
-    data["heat_index"] = int(hif);
+
     // Compute heat index in Celsius (isFahreheit = false)
     hic = dht.computeHeatIndex(t, h, false);
-    serializeJson(data, jsonData);
-    Serial.println(jsonData);
+    SensorData data = {.tempf = f,.humidity = h,.indexf = hif};
+    jsonData = writeData(data,jsonData);
+
     Serial.print(F("Humidity: "));
     Serial.print(h);
     Serial.print(F("%  Temperature: "));
@@ -126,7 +134,18 @@ void gettemperature() {
     Serial.println(F("°F"));
 }
 
+String writeData(const SensorData data, String jsonData)
+{
+  const size_t capacity = JSON_OBJECT_SIZE(3);
+  StaticJsonDocument<capacity> doc;
 
+  doc["temp"] = data.tempf;
+  doc["humidity"] = data.humidity;
+  doc["heat_index"] = data.indexf;
+
+  serializeJson(doc, jsonData);
+  return jsonData;
+}
 
 
 void loop() {
