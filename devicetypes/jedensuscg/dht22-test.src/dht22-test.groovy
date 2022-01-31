@@ -40,7 +40,6 @@ preferences {
 metadata {
     definition (name:"dht22 test", namespace:"jedensuscg", author:"jedensuscg@gmail.com") {
         capability "Temperature Measurement"
-        capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
         capability "Sensor"
         capability "Refresh"
@@ -51,7 +50,7 @@ metadata {
     tiles {
         valueTile("temperature", "device.temperature", width: 2, height: 2) {
             tileAttribute("device.temperature", key: "TEMPERATURE")
-            state "temperature", label:'Temperature\n ${currentValue}°', unit:"F",
+            state "default", label:'Temperature\n ${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"], 
                     [value: 44, color: "#1e9cbb"],
@@ -64,7 +63,7 @@ metadata {
         }
 
         valueTile("heatindex", "device.heatindex", inactiveLabel:false) {
-            state "heatindex", label:'Heat Index\n ${currentValue}°', unit:"F",
+            state "default", label:'Heat Index\n ${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"],
                     [value: 44, color: "#1e9cbb"],
@@ -280,7 +279,7 @@ private def temperatureFtoC(Float tempF) {
 }
 
 private def textVersion() {
-    return "Version .9 (01/29/2022)"
+    return "Version .5 (01/29/2022)"
 }
 
 private def textCopyright() {
