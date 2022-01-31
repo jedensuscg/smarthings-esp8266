@@ -75,7 +75,7 @@ void setup() {
     server.on("/temp", [](){  // if you add this subdirectory to your webserver call, you get text below :)
     gettemperature();       // read sensor
     webString=jsonData;   // Arduino has a hard time with float to string
-    DEBUG_PRINT("{\"temp\":"+String((int)f)+"" ", \"humidity\": "+String((int)h)+",  \"heat_index\": "+String((int)hif)+"}""")
+    DEBUG_PRINT("{\"temp\":"+String((int)f)+"" ", \"humidity\": "+String((int)h)+",  \"heatindex\": "+String((int)hif)+"}""")
     server.send(200, "text/plain", webString);            // send to someones browser when asked
     webString = "";
   });
@@ -118,7 +118,7 @@ void gettemperature() {
 
     // Compute heat index in Celsius (isFahreheit = false)
     hic = dht.computeHeatIndex(t, h, false);
-    SensorData data = {.tempf = f,.humidity = h,.indexf = hif};
+    SensorData data = {.tempf = 99,.humidity = h,.indexf = hif};
     jsonData = writeData(data,jsonData);
 
     Serial.print(F("Humidity: "));
@@ -141,7 +141,7 @@ String writeData(const SensorData data, String jsonData)
 
   doc["temp"] = data.tempf;
   doc["humidity"] = data.humidity;
-  doc["heat_index"] = data.indexf;
+  doc["heatindex"] = data.indexf;
 
   serializeJson(doc, jsonData);
   return jsonData;
