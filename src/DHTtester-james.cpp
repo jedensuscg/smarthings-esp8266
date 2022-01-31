@@ -118,7 +118,7 @@ void gettemperature() {
 
     // Compute heat index in Celsius (isFahreheit = false)
     hic = dht.computeHeatIndex(t, h, false);
-    SensorData data = {.tempf = 99,.humidity = h,.indexf = hif};
+    SensorData data = {.tempf = f,.humidity = h,.indexf = hif};
     jsonData = writeData(data,jsonData);
 
     Serial.print(F("Humidity: "));
