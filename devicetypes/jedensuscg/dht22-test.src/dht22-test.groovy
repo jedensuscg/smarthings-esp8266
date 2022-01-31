@@ -40,6 +40,7 @@ preferences {
 metadata {
     definition (name:"dht22 test", namespace:"jedensuscg", author:"jedensuscg@gmail.com") {
         capability "Temperature Measurement"
+        capability "Temperature Measurement"
         capability "Relative Humidity Measurement"
         capability "Sensor"
         capability "Refresh"
@@ -50,7 +51,7 @@ metadata {
     tiles {
         valueTile("temperature", "device.temperature", width: 2, height: 2) {
             tileAttribute("device.temperature", key: "TEMPERATURE")
-            state "temperature", label:'${currentValue}°', unit:"F",
+            state "temperature", label:'Temperature\n ${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"], 
                     [value: 44, color: "#1e9cbb"],
@@ -63,7 +64,7 @@ metadata {
         }
 
         valueTile("heatindex", "device.heatindex", inactiveLabel:false) {
-            state "heatindex", label:'${currentValue}°', unit:"F",
+            state "heatindex", label:'Heat Index\n ${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"],
                     [value: 44, color: "#1e9cbb"],
@@ -147,13 +148,13 @@ def parse(String message) {
     return null
 }
 
-// polling.poll 
+//poll 
 def poll() {
     LOG("poll()")
     return refresh()
 }
 
-// refresh.refresh
+// refresh
 def refresh() {
     LOG("refresh()")
     //STATE()
@@ -196,43 +197,6 @@ private apiGet(String path) {
     updateDNI()
 
     return new physicalgraph.device.HubAction(httpRequest)
-}
-
-private apiPost(String path, data) {
-    LOG("apiPost(${path}, ${data})")
-
-    def headers = [
-        HOST:       state.hostAddress,
-        Accept:     "*/*"
-    ]
-
-    def httpRequest = [
-        method:     'POST',
-        path:       path,
-        headers:    headers,
-        body:       data
-    ]
-
-    updateDNI()
-
-    return new physicalgraph.device.HubAction(httpRequest)
-}
-
-private def writeTempValue(name, value) {
-    LOG("writeTempValue(${name}, ${value})")
-
-    def json = "{\"${name}\": ${value}}"
-    def hubActions = [
-        apiPost("/temp", json),
-        delayHubAction(4000),
-        apiGet("/temp")
-    ]
-
-    return hubActions
-}
-
-private def delayHubAction(ms) {
-    return new physicalgraph.device.HubAction("delay ${ms}")
 }
 
 private parseHttpHeaders(String headers) {
@@ -283,10 +247,10 @@ private def parseTstatData(Map temps) {
         events << createEvent(ev)
     }
 
-    if (temps.containsKey("heat_index")) {
+    if (temps.containsKey("heatindex")) {
         def ev = [
             name:   "heatindex",
-            value:  scaleTemperature(temps.heat_index.toFloat()),
+            value:  scaleTemperature(temps.heatindex.toFloat()),
             unit:   getTemperatureScale(),
         ]
 
@@ -295,55 +259,6 @@ private def parseTstatData(Map temps) {
 
     LOG("events: ${events}")
     return events
-}
-
-private def parseThermostatState(val) {
-    def values = [
-        "idle",     // 0
-        "heating",  // 1
-        "cooling"   // 2
-    ]
-
-    return values[val.toInteger()]
-}
-
-private def parseFanState(val) {
-    def values = [
-        "off",      // 0
-        "on"        // 1
-    ]
-
-    return values[val.toInteger()]
-}
-
-private def parseThermostatMode(val) {
-    def values = [
-        "off",      // 0
-        "heat",     // 1
-        "cool",     // 2
-        "auto"      // 3
-    ]
-
-    return values[val.toInteger()]
-}
-
-private def parseFanMode(val) {
-    def values = [
-        "auto",     // 0
-        "circulate",// 1 (not supported by CT30)
-        "on"        // 2
-    ]
-
-    return values[val.toInteger()]
-}
-
-private def parseThermostatHold(val) {
-    def values = [
-        "off",      // 0
-        "on"        // 1
-    ]
-
-    return values[val.toInteger()]
 }
 
 private def scaleTemperature(Float temp) {
@@ -365,11 +280,11 @@ private def temperatureFtoC(Float tempF) {
 }
 
 private def textVersion() {
-    return "Version 1.0.3 (08/25/2015)"
+    return "Version .9 (01/29/2022)"
 }
 
 private def textCopyright() {
-    return "Copyright (c) 2014 Statusbits.com"
+    return "Copyright (c) 2022 James Edens"
 }
 
 private def LOG(message) {
@@ -379,7 +294,7 @@ private def LOG(message) {
 private def STATE() {
     log.trace "deviceNetworkId: ${device.deviceNetworkId}"
     log.trace "temperature: ${device.currentValue("temperature")}"
-    log.trace "heat_index: ${device.currentValue("heat_index")}"
+    log.trace "heatindex: ${device.currentValue("heatindex")}"
     log.trace "humidity: ${device.currentValue("humidity")}"
 
 }
