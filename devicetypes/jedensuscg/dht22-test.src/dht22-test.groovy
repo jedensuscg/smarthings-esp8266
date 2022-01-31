@@ -51,7 +51,7 @@ metadata {
         valueTile("temperature", "device.temperature") {
             state "temperature", label:'${currentValue}°', unit:"F",
                 backgroundColors:[
-                    [value: 31, color: "#153591"],
+                    [value: 31, color: "#153591"], 
                     [value: 44, color: "#1e9cbb"],
                     [value: 59, color: "#90d2a7"],
                     [value: 74, color: "#44b621"],
@@ -62,7 +62,7 @@ metadata {
         }
 
         valueTile("heatindex", "device.heatindex", inactiveLabel:false) {
-            state "default", label:'${currentValue}°', unit:"F",
+            state "heatindex", label:'${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"],
                     [value: 44, color: "#1e9cbb"],
@@ -94,8 +94,8 @@ metadata {
     }
 
     simulator {
-        status "Temperature 72.0":      "simulator:true, temp:72.00"
-        status "humidity 68.0":      "simulator:true, humidity:68.0"
+        status "Temperature 72.0":"simulator:true, temp:72.00"
+        status "humidity 68.0":"simulator:true, humidity:68.0"
 
     }
 }
