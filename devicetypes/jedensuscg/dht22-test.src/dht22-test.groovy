@@ -48,7 +48,8 @@ metadata {
     }
 
     tiles {
-        valueTile("temperature", "device.temperature") {
+        valueTile("temperature", "device.temperature", width: 2, height: 2) {
+            tileAttribute("device.temperature", key: "TEMPERATURE")
             state "temperature", label:'${currentValue}°', unit:"F",
                 backgroundColors:[
                     [value: 31, color: "#153591"], 
